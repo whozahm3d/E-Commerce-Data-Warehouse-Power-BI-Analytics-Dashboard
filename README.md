@@ -91,51 +91,54 @@ Validation performed using:
 - Product performance rankings
 - Yearly and quarterly revenue summaries
 
-⚙️ Query Optimization & Performance Engineering
+### Query Optimization & Performance Engineering
 Join Techniques Analysis
 
-The project includes a dedicated performance evaluation of PostgreSQL join algorithms using:
-Nested Loop Join
-Hash Join
-Sort-Merge Join
+- The project includes a dedicated performance evaluation of PostgreSQL join algorithms using:
+  - Nested Loop Join
+  - Hash Join
+  - Sort-Merge Join
 
-Each join type was tested using EXPLAIN ANALYZE on analytical queries involving:
-fact_sales
-dim_customer
-dim_product
-dim_date
-Metrics evaluated:
-Execution time
-Cost estimation
-Memory usage
-Join order
-Scan methods (sequential vs index scan)
+- Each join type was tested using EXPLAIN ANALYZE on analytical queries involving:
+  - fact_sales
+  - dim_customer
+  - dim_product
+  - dim_date
+
+- Metrics evaluated:
+  - Execution time
+  - Cost estimation
+  - Memory usage
+  - Join order
+  - Scan methods (sequential vs index scan)
+
 This analysis helped identify the most efficient join strategy for large fact-dimension joins.
 
-Indexing & Performance Optimization
+### Indexing & Performance Optimization
 
-To support fast analytical workloads, the following optimizations were applied:
-Indexes on all foreign keys in the fact table
-date_key
-product_key
-customer_key
+- To support fast analytical workloads, the following optimizations were applied:
+  - Indexes on all foreign keys in the fact table
+  - date_key
+  - product_key
+  - customer_key
 
-Indexes on dimension natural keys:
-customer_id
-stock_code
-full_date
+- Indexes on dimension natural keys:
+  - customer_id
+  - stock_code
+  - full_date
 
-Composite indexes for frequent filtering:
-(date_key, product_key)
-(customer_key, date_key)
+- Composite indexes for frequent filtering:
+  - (date_key, product_key)
+  - (customer_key, date_key)
 
-Query planner statistics maintained using:
-ANALYZE
-VACUUM
-These optimizations significantly reduced:
-Full table scans
-Query latency for dashboard visuals
-ETL and ELT processing time
+- Query planner statistics maintained using:
+  - ANALYZE
+  - VACUUM
+
+- These optimizations significantly reduced:
+  - Full table scans
+  - Query latency for dashboard visuals
+  - ETL and ELT processing time
 
 ---
 
@@ -164,28 +167,34 @@ Includes:
 
 ## 📁 Project Structure
 
-E-Commerce-Data-Warehouse-Power-BI-Analytics/
+Ecommerce-DW-PowerBI/
+│
+├── datasets/
+│   ├── raw/
+│   ├── cleaned/
 │
 ├── sql/
-│   ├── schema/              # DW schema creation scripts
-│   ├── etl/                 # ETL workflow scripts
-│   ├── elt/                 # ELT workflow scripts
-│   ├── olap/                # Analytical queries
-│   ├── molap/               # Aggregation tables & views
-│   └── joins/               # Join performance analysis
-│
-├── datasets/                # Raw and cleaned CSV files
+│   ├── schema.sql
+│   ├── etl.sql
+│   ├── elt.sql
+│   ├── olap.sql
+│   ├── molap.sql
+│   ├── join_performance.sql
 │
 ├── powerbi/
-│   └── dashboard.pbix       # Final Power BI dashboard
+│   ├── dashboard.pbix
+│   ├── dashboard_screenshot.png
 │
-├── screenshots/             # Dashboard & model screenshots
+├── docs/
+│   ├── report.pdf
+│   ├── schema_diagram.png
 │
-├── docs/                    # Project report and documentation
-│
-├── .github/workflows/       # GitHub Actions (SQL validation)
+├── screenshots/
+│   ├── model_view.png
+│   ├── dashboard_overview.png
 │
 └── README.md
+
 
 
 ---
