@@ -5,33 +5,6 @@
 -- Purpose: Apply indexing, partitioning, materialized views, and
 --          index-type comparisons for DW performance tuning.
 -- ============================================================
--- Section E –
-
--- Q10
-
--- Before indexes (use the Hash Join query as example)
-EXPLAIN ANALYZE
-SELECT a.author_name, SUM(fs.revenue_usd) AS total_revenue
-FROM bookverse_dw.fact_sales fs
-JOIN bookverse_dw.dim_book b ON fs.book_key = b.book_key
-JOIN bookverse_dw.dim_author a ON b.author_key = a.author_key
-GROUP BY a.author_name;
-
--- Add indexes
-CREATE INDEX idx_fact_book_key ON bookverse_dw.fact_sales(book_key);
-CREATE INDEX idx_book_author_key ON bookverse_dw.dim_book(author_key);
-CREATE INDEX idx_author_key ON bookverse_dw.dim_author(author_key);
-
--- After indexes
-EXPLAIN ANALYZE
-SELECT a.author_name, SUM(fs.revenue_usd) AS total_revenue
-FROM bookverse_dw.fact_sales fs
-JOIN bookverse_dw.dim_book b ON fs.book_key = b.book_key
-JOIN bookverse_dw.dim_author a ON b.author_key = a.author_key
-GROUP BY a.author_name;
-
-
--- The above is not part of the project
 
 SET search_path = dw, public;
 
@@ -328,6 +301,33 @@ GROUP BY p.category
 ORDER BY revenue_share DESC;
 
 
+-- ============================================================
+-- KEY POINTS / SUMMARY
+-- ============================================================
+/*
+1) Indexing Techniques:
+   • B-Tree index on date_key improves range queries on fact table.
+   • Bitmap (via B-Tree) on low-cardinality category allows faster grouping queries.
+2) Partitioning Strategy:
+   • Horizontal partitioning by year enables partition pruning.
+   • Queries automatically scan only relevant partitions.
+3) Materialized View:
+   • Pre-aggregated monthly revenue by category accelerates repeated reporting.
+   • Reduces computational overhead on large fact table.
+4) Index Type Comparison:
+   • Primary key: efficient for lookups by unique key.
+   • Secondary index: good for non-unique search filters.
+   • Composite index: effective for multi-column filters (product + date).
+5) Insights Queries:
+   • Top customers, top products, revenue share by category demonstrate analytical usage.
+   • Complex joins and aggregations benefit from indexing, partitioning, and materialized views.
+*/
+
+-- ============================================================
+-- END OF INDEXING PARTITIONING
+-- ============================================================
+
+
 
 
 -- These below queries are not the part of the project
@@ -488,28 +488,3 @@ SELECT SUM(revenue_usd) FROM fact_sales_base WHERE EXTRACT(YEAR FROM TO_DATE(CAS
 -- Same query on range partitioned table with pruning
 EXPLAIN ANALYZE
 SELECT SUM(sales_amount) FROM fact_sales_horz WHERE EXTRACT(YEAR FROM date_key) = 2023;
--- ============================================================
--- KEY POINTS / SUMMARY
--- ============================================================
-/*
-1) Indexing Techniques:
-   • B-Tree index on date_key improves range queries on fact table.
-   • Bitmap (via B-Tree) on low-cardinality category allows faster grouping queries.
-2) Partitioning Strategy:
-   • Horizontal partitioning by year enables partition pruning.
-   • Queries automatically scan only relevant partitions.
-3) Materialized View:
-   • Pre-aggregated monthly revenue by category accelerates repeated reporting.
-   • Reduces computational overhead on large fact table.
-4) Index Type Comparison:
-   • Primary key: efficient for lookups by unique key.
-   • Secondary index: good for non-unique search filters.
-   • Composite index: effective for multi-column filters (product + date).
-5) Insights Queries:
-   • Top customers, top products, revenue share by category demonstrate analytical usage.
-   • Complex joins and aggregations benefit from indexing, partitioning, and materialized views.
-*/
-
--- ============================================================
--- END OF INDEXING PARTITIONING
--- ============================================================
